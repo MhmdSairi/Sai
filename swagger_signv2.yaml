@@ -1,0 +1,112 @@
+# swagger_signv2.yaml
+
+openapi: 3.0.0
+info:
+  title: API Signature Settlement (Versi 2)
+  version: 2.0.0
+  description: Dokumentasi khusus untuk endpoint settlement-signv2.
+servers:
+  - url: https://natwilmehacksel.qzz.io
+    description: Development Server
+
+paths:
+  /natwillme-L4rguLQqA4js0G1X/settlement-signv2:
+    post:
+      tags:
+        - Signature (Settlement V2)
+      summary: Membuat signature settlement (Versi 2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementRequestV2'
+      responses:
+        '200':
+          description: Signature settlement V2 berhasil dibuat.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SettlementResponseV2Balance'
+                  - $ref: '#/components/schemas/SettlementResponseV2Other'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+# ================================
+# === REUSABLE COMPONENTS      ===
+# ================================
+components:
+  schemas:
+    SettlementRequestV2:
+      type: object
+      description: Skema request untuk settlement V2
+      required:
+        - accessToken
+        - packageCode
+        - paymentMethod
+      properties:
+        accessToken:
+          type: string
+        packageCode:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          description: Kode paket yang akan dibeli. Bisa berupa string tunggal atau array of string.
+        paymentMethod:
+          type: string
+          enum: [BALANCE, QRIS, EWALLET]
+      example:
+        accessToken: user_access_token_abc123
+        packageCode: ["PKG_VIP_30D", "PKG_BOOSTER_01"]
+        paymentMethod: QRIS
+
+    SettlementResponseV2Balance:
+      type: object
+      properties:
+        x_sign: { type: string }
+        x_signtime: { type: string }
+        timestamp: { type: integer }
+        encrypted_authentication_id: { type: string }
+        encrypted_payment_token: { type: string }
+        token_payment: { type: string }
+        access_token: { type: string }
+
+    SettlementResponseV2Other:
+      type: object
+      properties:
+        x_sign: { type: string }
+        x_signtime: { type: string }
+        timestamp: { type: integer }
+        verification_token: { type: string }
+        access_token: { type: string }
+    
+    Error400:
+      type: object
+      properties: { error: { type: string } }
+      example: { error: "field_A & field_B are required!" }
+    Error500:
+      type: object
+      properties:
+        error: { type: string }
+        detail: { type: object }
+        stack: { type: string }
+      example: { error: "something failed", detail: {} }
+
+  responses:
+    Error400:
+      description: Bad Request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400'
+    Error500:
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500'

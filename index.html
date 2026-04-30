@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Natalia Wilsona DOR Hexel - Full Working</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    /* Dark mode styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    
+    body.dark-mode .container {
+      background-color: transparent;
+    }
+    
+    body.dark-mode .card {
+      background-color: #1e1e1e !important;
+      color: #e0e0e0 !important;
+      border-color: #333 !important;
+    }
+    
+    body.dark-mode .card .card-title,
+    body.dark-mode .card label,
+    body.dark-mode .card strong,
+    body.dark-mode .card div,
+    body.dark-mode .card span {
+      color: #ddd !important;
+    }
+    
+    body.dark-mode .form-control,
+    body.dark-mode .form-select,
+    body.dark-mode textarea {
+      background-color: #2c2c2c !important;
+      color: #eee !important;
+      border-color: #444 !important;
+    }
+    
+    body.dark-mode .form-control::placeholder,
+    body.dark-mode textarea::placeholder {
+      color: #aaa !important;
+    }
+    
+    body.dark-mode .btn-primary {
+      background-color: #0d6efd !important;
+      border-color: #0d6efd !important;
+      color: #fff !important;
+    }
+    
+    body.dark-mode .btn-primary:hover {
+      background-color: #0b5ed7 !important;
+      border-color: #0a58ca !important;
+    }
+    
+    body.dark-mode .btn-secondary {
+      background-color: #444 !important;
+      border-color: #555 !important;
+      color: #ddd !important;
+    }
+    
+    body.dark-mode .btn-secondary:hover {
+      background-color: #555 !important;
+      border-color: #666 !important;
+      color: #fff !important;
+    }
+    
+    body.dark-mode .response-box.json-view {
+      background-color: #2c2c2c !important;
+      color: #f8f9fa !important;
+    }
+    
+    body.dark-mode .response-box.formatted-view {
+      background-color: #1e1e1e !important;
+      color: #ddd !important;
+      box-shadow: 0 0 10px rgb(255 255 255 / 0.1) !important;
+    }
+          
+    .response-box.json-view {
+      background-color: #212529;
+      color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 0.375rem;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      outline: none;
+    }
+
+    .response-box.formatted-view {
+      background-color: #fff;
+      color: #222;
+      padding: 1rem 1.5rem;
+      border-radius: 0.375rem;
+      font-family: Arial, sans-serif;
+      max-height: none;
+      overflow: visible;
+      white-space: normal;
+      box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+    }
+
+    .error-text {
+      color: #dc3545;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container my-5">
+    
+    <button id="darkModeToggle" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+      <i id="darkModeIcon" class="fas fa-moon"></i>
+      <span id="darkModeText">Dark Mode</span>
+    </button>
+    
+    <h1 class="mb-4 text-center">Natalia Wilsona DOR Hexel</h1>
+
+    <!-- Request OTP -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Request OTP</h2>
+        <form id="reqOtpForm" method="post" class="row g-3">
+          <div class="col-md-6">
+            <label for="reqPhoneNumber" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="reqPhoneNumber" name="phoneNumber" placeholder="081701234567" required />
+          </div>
+          <div class="col-md-6">
+            <label for="reqSubsType" class="form-label">Subscription Type</label>
+            <select class="form-select" id="reqSubsType" name="subsType">
+              <option value="PREPAID" selected>PREPAID</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="reqOtpBtn">
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="reqOtpSpinner"></span>
+              <span id="reqOtpBtnText">Request OTP</span>
+            </button>
+            <div class="error-text" id="reqOtpError"></div>
+          </div>
+        </form>
+        <div id="reqOtpResult" class="response-box json-view mt-3" tabindex="0"></div>
+      </div>
+    </section>
+
+    <!-- Confirm OTP -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Confirm OTP</h2>
+        <form id="confirmOtpForm" method="post" class="row g-3">
+          <div class="col-md-4">
+            <label for="confirmPhoneNumber" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="confirmPhoneNumber" name="phoneNumber" placeholder="081701234567" required />
+          </div>
+          <div class="col-md-4">
+            <label for="confirmSubsType" class="form-label">Subscription Type</label>
+            <select class="form-select" id="confirmSubsType" name="subsType">
+              <option value="PREPAID" selected>PREPAID</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="confirmCode" class="form-label">OTP Code</label>
+            <input type="text" class="form-control" id="confirmCode" name="code" placeholder="938609" required />
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="confirmOtpBtn">
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="confirmOtpSpinner"></span>
+              <span id="confirmOtpBtnText">Confirm OTP</span>
+            </button>
+            <div class="error-text" id="confirmOtpError"></div>
+          </div>
+        </form>
+        <div id="confirmOtpResult" class="response-box json-view mt-3" tabindex="0"></div>
+        <button id="copyRefreshTokenBtn" class="btn btn-success mt-2 d-none" type="button">Copy Refresh Token</button>
+      </div>
+    </section>
+
+    <!-- Quota Details -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Quota Details</h2>
+        <form id="quotaDetailsForm" method="post" class="mb-3">
+          <div class="mb-3">
+            <label for="quotaRefreshToken" class="form-label">Refresh Token</label>
+            <textarea class="form-control" id="quotaRefreshToken" name="refreshToken" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsIn..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="quotaDetailsBtn">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="quotaDetailsSpinner"></span>
+            <span id="quotaDetailsBtnText">Get Quota Details</span>
+          </button>
+          <div class="error-text" id="quotaDetailsError"></div>
+        </form>
+
+        <button id="toggleQuotaViewBtn" class="btn btn-secondary mb-3" style="display:none;">Show Readable View</button>
+
+        <pre id="quotaDetailsJsonView" class="response-box json-view" style="display:none;" tabindex="0"></pre>
+        <div id="quotaDetailsFormattedView" class="response-box formatted-view" style="display:none;" tabindex="0"></div>
+      </div>
+    </section>
+
+    <!-- Balance Details -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Balance Details</h2>
+        <form id="balanceDetailsForm" method="post" class="mb-3">
+          <div class="mb-3">
+            <label for="balanceRefreshToken" class="form-label">Refresh Token</label>
+            <textarea class="form-control" id="balanceRefreshToken" name="refreshToken" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsIn..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="balanceDetailsBtn">
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="balanceDetailsSpinner"></span>
+            <span id="balanceDetailsBtnText">Get Balance Details</span>
+          </button>
+          <div class="error-text" id="balanceDetailsError"></div>
+        </form>
+
+        <button id="toggleBalanceViewBtn" class="btn btn-secondary mb-3" style="display:none;">Show Readable View</button>
+
+        <pre id="balanceDetailsJsonView" class="response-box json-view" style="display:none;" tabindex="0"></pre>
+        <div id="balanceDetailsFormattedView" class="response-box formatted-view" style="display:none;" tabindex="0"></div>
+      </div>
+    </section>
+
+    <!-- Package Details -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Package Details</h2>
+        <form id="packageDetailsForm" method="post" class="row g-3">
+          <div class="col-md-8">
+            <label for="packageDetailsRefreshToken" class="form-label">Refresh Token</label>
+            <textarea class="form-control" id="packageDetailsRefreshToken" name="refreshToken" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsIn..." required></textarea>
+          </div>
+          <div class="col-md-4">
+            <label for="packageCode" class="form-label">Package Code</label>
+            <input type="text" class="form-control" id="packageCode" name="packageCode" placeholder="U0NfX-ikTGcavUm0..." required />
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="packageDetailsBtn">
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="packageDetailsSpinner"></span>
+              <span id="packageDetailsBtnText">Get Package Details</span>
+            </button>
+            <div class="error-text" id="packageDetailsError"></div>
+          </div>
+        </form>
+        <button id="togglePackageViewBtn" class="btn btn-secondary mb-3" style="display:none;">Show Readable View</button>
+        <pre id="packageDetailsJsonView" class="response-box json-view" style="display:none;" tabindex="0"></pre>
+        <div id="packageDetailsFormattedView" class="response-box formatted-view" style="display:none;" tabindex="0"></div>
+      </div>
+    </section>
+
+    <!-- Package List -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">Package List</h2>
+        <form id="packageListForm" method="post" class="row g-3">
+          <div class="col-md-8">
+            <label for="packageListRefreshToken" class="form-label">Refresh Token</label>
+            <textarea class="form-control" id="packageListRefreshToken" name="refreshToken" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsIn..." required></textarea>
+          </div>
+          <div class="col-md-4">
+            <label for="familyCode" class="form-label">Family Code</label>
+            <input type="text" class="form-control" id="familyCode" name="familyCode" placeholder="1b42d4f6-a76e-4986-aa5c-e2979da952f4" required />
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="packageListBtn">
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="packageListSpinner"></span>
+              <span id="packageListBtnText">Get Package List</span>
+            </button>
+            <div class="error-text" id="packageListError"></div>
+          </div>
+        </form>
+        <button id="togglePackageListViewBtn" class="btn btn-secondary mb-3" style="display:none;">Show Readable View</button>
+        <pre id="packageListJsonView" class="response-box json-view" style="display:none;" tabindex="0"></pre>
+        <div id="packageListFormattedView" class="response-box formatted-view" style="display:none;" tabindex="0"></div>
+      </div>
+    </section>
+
+    <!-- DOR -->
+    <section class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title h5 mb-3 text-primary">DOR</h2>
+        <form id="dorForm" method="post" class="row g-3">
+          <div class="col-md-6">
+            <label for="dorRefreshToken" class="form-label">Refresh Token</label>
+            <textarea class="form-control" id="dorRefreshToken" name="refreshToken" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsIn..." required></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="dorPackageCode" class="form-label">Package Code</label>
+            <input type="text" class="form-control" id="dorPackageCode" name="packageCode" placeholder="U0NfX-ikTGcavUm0..." required />
+          </div>
+          <div class="col-md-4">
+            <label for="dorPaymentMethod" class="form-label">Payment Method</label>
+            <select class="form-select" id="dorPaymentMethod" name="paymentMethod">
+              <option value="BALANCE" selected>BALANCE</option>
+              <option value="DANA">DANA</option>
+              <option value="GOPAY">GOPAY</option>
+              <option value="QRIS">QRIS</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="dorOverwritePrice" class="form-label">Overwrite Price</label>
+            <input type="number" class="form-control" id="dorOverwritePrice" name="overwritePrice" placeholder="500" required />
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary" id="dorBtn">
+              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="dorSpinner"></span>
+              <span id="dorBtnText">Submit DOR</span>
+            </button>
+            <div class="error-text" id="dorError"></div>
+          </div>
+        </form>
+        <div id="dorResult" class="response-box json-view mt-3" tabindex="0"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const baseUrl = 'https://natwilmehacksel.qzz.io/api';
+
+    async function postData(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || response.statusText);
+      }
+      return response.json();
+    }
+
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeIcon = document.getElementById('darkModeIcon');
+    const darkModeText = document.getElementById('darkModeText');
+    
+    function setDarkMode(enabled) {
+      if (enabled) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'enabled');
+        darkModeIcon.classList.replace('fa-moon', 'fa-sun');
+        darkModeText.textContent = 'Light Mode';
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'disabled');
+        darkModeIcon.classList.replace('fa-sun', 'fa-moon');
+        darkModeText.textContent = 'Dark Mode';
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const darkModeSetting = localStorage.getItem('darkMode');
+      if (darkModeSetting === 'enabled') {
+        setDarkMode(true);
+      } else {
+        setDarkMode(false);
+      }
+    });
+    
+    darkModeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.contains('dark-mode');
+      setDarkMode(!isDark);
+    });
+
+    // Cek preferensi user saat load halaman
+    window.addEventListener('DOMContentLoaded', () => {
+      const darkModeSetting = localStorage.getItem('darkMode');
+      if (darkModeSetting === 'enabled') {
+        setDarkMode(true);
+      }
+    });
+
+    function setLoading(button, spinner, isLoading) {
+      if (isLoading) {
+        button.setAttribute('disabled', 'disabled');
+        spinner.classList.remove('d-none');
+      } else {
+        button.removeAttribute('disabled');
+        spinner.classList.add('d-none');
+      }
+    }
+
+    function scrollTo(element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function setupCtrlAForResponseBox(boxId) {
+      const box = document.getElementById(boxId);
+      box.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+          e.preventDefault();
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(box);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      });
+    }
+
+    // Helper: format UNIX timestamp ke tanggal
+    function formatDate(unixTimestamp) {
+      if (!unixTimestamp) return 'N/A';
+      const date = new Date(unixTimestamp * 1000);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    }
+    
+    // Helper: hitung validity (hari tersisa)
+    function calculateValidity(unixTimestamp) {
+      if (!unixTimestamp) return 'N/A';
+      const now = Date.now();
+      const expiry = unixTimestamp * 1000;
+      const diff = expiry - now;
+      if (diff <= 0) return 'Expired';
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      return days + ' day(s)';
+    }
+    
+    // Format bytes ke human readable
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      if (!bytes) return 'N/A';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function formatUnixTimestamp(unix) {
+      if (!unix) return 'N/A';
+      const date = new Date(unix * 1000); // convert detik ke ms
+      return date.toLocaleString();
+    }
+    
+    // Render versi readable dengan emoji
+    function renderQuotaFormatted(data) {
+      if (!data || !data.quotas || !Array.isArray(data.quotas)) return 'No quota data';
+    
+      return data.quotas.map(quota => {
+        const benefitsHtml = (quota.benefits || []).map(benefit => `
+          <div>
+            📦 <strong>${benefit.name}</strong>: 
+            🧮 Total = ${formatBytes(benefit.total)}, 
+            🔄 Remaining = ${formatBytes(benefit.remaining)}
+          </div>
+        `).join('');
+    
+        return `
+          <div style="margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;">
+            <div>🆔 <strong>Group Code:</strong> ${quota.group_code || 'N/A'}</div>
+            <div>🏷️ <strong>Quota Code:</strong> ${quota.quota_code || 'N/A'}</div>
+            <div>📛 <strong>Name:</strong> ${quota.name || 'N/A'}</div>
+            <div>⏰ <strong>Expiry:</strong> ${formatDate(quota.expired_at)}</div>
+            <div>📅 <strong>Validity:</strong> ${calculateValidity(quota.expired_at)}</div>
+            <div>🎁 <strong>Benefits:</strong> ${benefitsHtml || 'No benefits'}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function renderBalanceFormatted(data) {
+      if (!data || typeof data !== 'object') return 'No balance data available';
+      
+      return `
+        <div style="margin-bottom: 1rem;">
+          📶 <strong>Status Langganan:</strong> ${data.subscription_status || 'N/A'}<br>
+          🚫 <strong>Status Suspend:</strong> ${data.suspended_status || 'Tidak'}<br>
+          💰 <strong>Sisa Pulsa:</strong> ${data.balance?.remaining || 0} (Rp)<br>
+          ⏳ <strong>Kadaluwarsa Pulsa:</strong> ${formatUnixTimestamp(data.balance?.expired_at)}<br>
+        </div>
+    
+        <div style="margin-bottom: 1rem;">
+          🎯 <strong>PrioFlex Balance:</strong> ${data.prio_flex_balance?.remaining || 0}<br>
+          🧩 <strong>Has PrioFlex:</strong> ${data.prio_flex_balance?.has_prio_flex ? 'Yes' : 'No'}<br>
+        </div>
+    
+        <div style="margin-bottom: 1rem;">
+          🧾 <strong>Credit Limit:</strong> ${data.credit_limit}<br>
+          ⚙️ <strong>Limit Spend Aktif:</strong> ${data.is_spend_limit_activated ? 'Ya' : 'Tidak'}<br>
+          📊 <strong>Limit Digunakan:</strong> ${data.limit_percentage}%<br>
+          🔄 <strong>Bisa Ubah Limit:</strong> ${data.can_change_spend_limit ? 'Ya' : 'Tidak'}<br>
+          ❗ <strong>Limit Tercapai:</strong> ${data.is_spend_limit_reached ? 'Ya' : 'Tidak'}<br>
+        </div>
+    
+        <div style="margin-bottom: 1rem;">
+          📅 <strong>Cycle Saat Ini:</strong><br>
+          - Mulai: ${formatDate(data.current_cycle?.start_date)}<br>
+          - Selesai: ${formatDate(data.current_cycle?.end_date)}<br>
+        </div>
+    
+        <div style="margin-bottom: 1rem;">
+          🥇 <strong>Status Prio X:</strong> ${data.prio_x_status || 'N/A'}<br>
+          🏢 <strong>Tipe Enterprise:</strong> ${data.enterprise_type || 'N/A'}<br>
+          🧭 <strong>Akhir Masa Tenggang:</strong> ${formatUnixTimestamp(data.grace_end_date)}<br>
+        </div>
+      `;
+    }
+    
+    function renderPackageFormatted(data) {
+      if (!data || !data.package_family || !data.package_detail_variant) return 'No package data';
+    
+      const pf = data.package_family;
+      const pdv = data.package_detail_variant;
+      const po = data.package_option || {};
+    
+      // Format flashsale countdown to readable if > 0
+      const flashsaleCountdown = pf.flashsale_countdown > 0 ? `${pf.flashsale_countdown} seconds` : 'No flashsale';
+    
+      // Benefits list (package_option.benefits)
+      const benefitsHtml = (po.benefits || []).map(benefit => `
+        <div>
+          📦 <strong>${benefit.name}</strong> (${benefit.data_type || 'N/A'})
+        </div>
+      `).join('');
+    
+      return `
+        <div style="margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;">
+          <div>🏷️ <strong>Package Family Name:</strong> ${pf.name || 'N/A'}</div>
+          <div>🆔 <strong>Package Family Code:</strong> ${pf.package_family_code || 'N/A'}</div>
+          <div>🎯 <strong>Package Family Type:</strong> ${pf.package_family_type || 'N/A'}</div>
+          <div>⏳ <strong>Flashsale Countdown:</strong> ${flashsaleCountdown}</div>
+          <div>🖼️ <strong>Package Variant Name:</strong> ${pdv.name || 'N/A'}</div>
+          <div>🆔 <strong>Package Variant Code:</strong> ${pdv.package_variant_code || 'N/A'}</div>
+          <div>🆔 <strong>Package Option Code:</strong> ${po.package_option_code || 'N/A'}</div>
+          <div>📦 <strong>Package Option Name:</strong> ${po.name || 'N/A'}</div>
+          <div>💰 <strong>Price:</strong> ${po.price != null ? po.price : 'N/A'}</div>
+          <div>📅 <strong>Occuring Type:</strong> ${po.occuring_type || 'N/A'}</div>
+          <div>🎁 <strong>Benefits:</strong> ${benefitsHtml || 'No benefits'}</div>
+        </div>
+      `;
+    }
+    
+    function renderPackageListFormatted(data) {
+      if (!data || !data.package_variants || !Array.isArray(data.package_variants)) return 'No package variants data';
+    
+      // Render package family info
+      const family = data.package_family || {};
+    
+      const variantsHtml = data.package_variants.map(variant => {
+        const optionsHtml = (variant.package_options || []).map(option => {
+          const benefitsHtml = (option.benefits || []).map(benefit => `
+            <li>📦 ${benefit.name} (${benefit.data_type || 'N/A'})</li>
+          `).join('');
+    
+          return `
+            <div style="margin-bottom: 0.5rem; padding-left: 1rem;">
+              🆔 <strong>Option Code:</strong> ${option.package_option_code || 'N/A'}<br/>
+              📦 <strong>Option Name:</strong> ${option.name || 'N/A'}<br/>
+              💰 <strong>Price:</strong> ${option.price != null ? option.price : 'N/A'}<br/>
+              ⏳ <strong>Validity:</strong> ${option.validity || 'N/A'}<br/>
+              🎁 <strong>Benefits:</strong>
+              <ul>${benefitsHtml || '<li>❌ No benefits</li>'}</ul>
+            </div>
+          `;
+        }).join('');
+    
+        return `
+          <div style="margin-bottom: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;">
+            🏷️ <div><strong>Variant Name:</strong> ${variant.name || 'N/A'}</div>
+            🆔 <div><strong>Variant Code:</strong> ${variant.package_variant_code || 'N/A'}</div>
+            ${optionsHtml}
+          </div>
+        `;
+      }).join('');
+    
+      return `
+        <div style="margin-bottom: 1.5rem; border: 1px solid #ddd; padding: 1rem; border-radius: 8px;">
+          <div>🏷️ <strong>Package Family Name:</strong> ${family.name || 'N/A'}</div>
+          <div>🆔 <strong>Package Family Code:</strong> ${family.package_family_code || 'N/A'}</div>
+          <div>📦 <strong>Package Family Type:</strong> ${family.package_family_type || 'N/A'}</div>
+          <div>📋 <strong>Package Variants:</strong> ${variantsHtml || 'No variants'}</div>
+        </div>
+      `;
+    }
+
+    // Setup form handler with toggle support
+    function setupForm(formId, url, getData, resultJsonId, errorId, btnId, spinnerId, onSuccess, options = {}) {
+      const form = document.getElementById(formId);
+      const resultJsonView = document.getElementById(resultJsonId);
+      const errorDiv = document.getElementById(errorId);
+      const btn = document.getElementById(btnId);
+      const spinner = document.getElementById(spinnerId);
+
+      const toggleBtn = options.toggleBtn ? document.getElementById(options.toggleBtn) : null;
+      const resultFormattedView = options.resultFormattedView ? document.getElementById(options.resultFormattedView) : null;
+      const renderFormatted = options.renderFormatted || null;
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        errorDiv.textContent = '';
+        if (resultJsonView) resultJsonView.style.display = 'none';
+        if (resultFormattedView) resultFormattedView.style.display = 'none';
+        if (toggleBtn) toggleBtn.style.display = 'none';
+
+        setLoading(btn, spinner, true);
+
+        try {
+          const data = getData(form);
+          const res = await postData(url, data);
+
+          if (resultJsonView) {
+            resultJsonView.textContent = JSON.stringify(res, null, 2);
+            resultJsonView.style.display = 'block';
+          }
+
+          if (toggleBtn) {
+            toggleBtn.style.display = 'inline-block';
+            toggleBtn.textContent = 'Show Readable View';
+          }
+
+          if (typeof onSuccess === 'function') {
+            onSuccess(res);
+          }
+
+          form._lastData = res;
+
+        } catch (err) {
+          errorDiv.textContent = 'Error: ' + err.message;
+          if (typeof onSuccess === 'function') {
+            onSuccess(null);
+          }
+        } finally {
+          setLoading(btn, spinner, false);
+        }
+      });
+
+      if (toggleBtn && resultJsonView && resultFormattedView && renderFormatted) {
+        toggleBtn.addEventListener('click', () => {
+          if (resultJsonView.style.display !== 'none') {
+            resultFormattedView.innerHTML = renderFormatted(form._lastData);
+            resultJsonView.style.display = 'none';
+            resultFormattedView.style.display = 'block';
+            toggleBtn.textContent = 'Show JSON View';
+          } else {
+            resultJsonView.style.display = 'block';
+            resultFormattedView.style.display = 'none';
+            toggleBtn.textContent = 'Show Readable View';
+          }
+        });
+      }
+
+      setupCtrlAForResponseBox(resultJsonId);
+    }
+
+    // Copy Refresh Token button event listener
+    const copyBtn = document.getElementById('copyRefreshTokenBtn');
+    copyBtn.addEventListener('click', () => {
+      const token = copyBtn.dataset.token;
+      if (!token) return;
+
+      navigator.clipboard.writeText(token).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy Refresh Token';
+        }, 2000);
+      }).catch(() => {
+        alert('Failed to copy refresh token.');
+      });
+    });
+
+    // Setup all forms
+    setupForm(
+      'reqOtpForm',
+      `${baseUrl}/req-otp`,
+      form => ({
+        phoneNumber: form.phoneNumber.value,
+        subsType: form.subsType.value
+      }),
+      'reqOtpResult',
+      'reqOtpError',
+      'reqOtpBtn',
+      'reqOtpSpinner'
+    );
+
+    setupForm(
+      'confirmOtpForm',
+      `${baseUrl}/confirm-otp`,
+      form => ({
+        phoneNumber: form.phoneNumber.value,
+        subsType: form.subsType.value,
+        code: form.code.value
+      }),
+      'confirmOtpResult',
+      'confirmOtpError',
+      'confirmOtpBtn',
+      'confirmOtpSpinner',
+      (res) => {
+        if (res && (res.refresh_token || res.refreshToken)) {
+          const token = res.refresh_token || res.refreshToken;
+          copyBtn.classList.remove('d-none');
+          copyBtn.dataset.token = token;
+          copyBtn.textContent = 'Copy Refresh Token';
+        } else {
+          copyBtn.classList.add('d-none');
+          copyBtn.dataset.token = '';
+        }
+      }
+    );
+
+    setupForm(
+      'quotaDetailsForm',
+      `${baseUrl}/quota-details`,
+      form => ({
+        refreshToken: form.refreshToken.value.trim()
+      }),
+      'quotaDetailsJsonView',
+      'quotaDetailsError',
+      'quotaDetailsBtn',
+      'quotaDetailsSpinner',
+      null,
+      {
+        toggleBtn: 'toggleQuotaViewBtn',
+        resultFormattedView: 'quotaDetailsFormattedView',
+        renderFormatted: renderQuotaFormatted
+      }
+    );
+
+    setupForm(
+      'balanceDetailsForm',
+      `${baseUrl}/balance-details`,
+      form => ({
+        refreshToken: form.refreshToken.value.trim()
+      }),
+      'balanceDetailsJsonView',
+      'balanceDetailsError',
+      'balanceDetailsBtn',
+      'balanceDetailsSpinner',
+      null,
+      {
+        toggleBtn: 'toggleBalanceViewBtn',
+        resultFormattedView: 'balanceDetailsFormattedView',
+        renderFormatted: renderBalanceFormatted
+      }
+    );
+
+    setupForm(
+      'packageDetailsForm',
+      `${baseUrl}/package-details`,
+      form => ({
+        refreshToken: form.refreshToken.value.trim(),
+        packageCode: form.packageCode.value
+      }),
+      'packageDetailsJsonView',
+      'packageDetailsError',
+      'packageDetailsBtn',
+      'packageDetailsSpinner',
+      null,
+      {
+        toggleBtn: 'togglePackageViewBtn',
+        resultFormattedView: 'packageDetailsFormattedView',
+        renderFormatted: renderPackageFormatted
+      }
+    );
+
+    setupForm(
+      'packageListForm',
+      `${baseUrl}/package-list`,
+      form => ({
+        refreshToken: form.refreshToken.value.trim(),
+        familyCode: form.familyCode.value
+      }),
+      'packageListJsonView',
+      'packageListError',
+      'packageListBtn',
+      'packageListSpinner',
+      null,
+      {
+        toggleBtn: 'togglePackageListViewBtn',
+        resultFormattedView: 'packageListFormattedView',
+        renderFormatted: renderPackageListFormatted
+      }
+    );
+
+    setupForm(
+      'dorForm',
+      `${baseUrl}/dor`,
+      form => ({
+        refreshToken: form.refreshToken.value.trim(),
+        packageCode: form.packageCode.value,
+        paymentMethod: form.paymentMethod.value,
+        overwritePrice: Number(form.overwritePrice.value)
+      }),
+      'dorResult',
+      'dorError',
+      'dorBtn',
+      'dorSpinner'
+    );
+  </script>
+</body>
+
+</html>

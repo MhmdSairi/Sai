@@ -1,0 +1,230 @@
+# swagger.yaml (Versi Lengkap dan Benar)
+
+openapi: 3.0.0
+info:
+  title: API Enkripsi & Signature (Utama)
+  version: 1.0.0
+  description: Dokumentasi API untuk layanan enkripsi, dekripsi, dan pembuatan signature.
+servers:
+  - url: https://natwilmehacksel.qzz.io
+    description: Development Server
+
+paths:
+  /natwillme-L4rguLQqA4js0G1X/encrypt:
+    post:
+      tags: [Encryption]
+      summary: Mengenkripsi data plaintext
+      description: Menerima plaintext dan timestamp untuk dienkripsi menggunakan AES-256-CBC.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plaintext, timestamp]
+              properties:
+                plaintext:
+                  type: string
+                  description: Data yang akan dienkripsi (bisa berupa string biasa atau string JSON).
+                timestamp:
+                  type: integer
+                  description: Timestamp saat request dibuat (digunakan sebagai basis untuk IV).
+                key:
+                  type: string
+                  description: (Opsional) Kunci enkripsi custom.
+            example:
+              plaintext: '{"order_id": "12345", "amount": 10000}'
+              timestamp: 1678886400
+              key: kunci_rahasia_opsional
+      responses:
+        '200':
+          description: Enkripsi berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  xdata:
+                    type: string
+                    description: Hasil enkripsi dalam format base64 URL-safe.
+                  xtime:
+                    type: integer
+                    description: Timestamp yang digunakan.
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /natwillme-L4rguLQqA4js0G1X/decrypt:
+    post:
+      tags: [Encryption]
+      summary: Mendekripsi data terenkripsi (xdata)
+      description: Menerima data terenkripsi (xdata) dan timestamp (xtime) untuk didekripsi.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [xdata, xtime]
+              properties:
+                xdata:
+                  type: string
+                  description: Data terenkripsi.
+                xtime:
+                  type: integer
+                  description: Timestamp yang digunakan saat enkripsi.
+                key:
+                  type: string
+                  description: (Opsional) Kunci dekripsi custom.
+            example:
+              xdata: "some_encrypted_string"
+              xtime: 1678886400
+      responses:
+        '200':
+          description: Dekripsi berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plaintext:
+                    type: string
+                    description: Hasil dekripsi data.
+                  xtime:
+                    type: integer
+                    description: Timestamp yang digunakan.
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500Decrypt'
+
+  /natwillme-L4rguLQqA4js0G1X/default-signature:
+    post:
+      tags: [Signature]
+      summary: Membuat signature request standar
+      description: Membuat signature yang akan digunakan pada header request API lain.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path, method]
+              properties:
+                path:
+                  type: string
+                  example: /api/v1/profile
+                method:
+                  type: string
+                  example: GET
+                idtoken:
+                  type: string
+                  description: (Opsional) Token sesi pengguna.
+      responses:
+        '200':
+          description: Signature berhasil dibuat.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  x_sign:
+                    type: string
+                  x_signtime:
+                    type: string
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+  /natwillme-L4rguLQqA4js0G1X/settlement-signature:
+    post:
+      tags:
+        - Signature (Settlement)
+      summary: Membuat signature untuk proses settlement pembelian paket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementRequestV1'
+      responses:
+        '200':
+          description: Signature settlement berhasil dibuat.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SettlementResponseBalance'
+                  - $ref: '#/components/schemas/SettlementResponseOther'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+# ================================
+# === REUSABLE COMPONENTS      ===
+# ================================
+components:
+  schemas:
+    SettlementRequestV1:
+      type: object
+      description: Skema request untuk settlement V1
+      required: [accessToken, packageCode, paymentMethod]
+      properties:
+        accessToken: { type: string }
+        packageCode:
+          type: string
+          description: Kode paket yang akan dibeli (harus berupa string tunggal).
+        paymentMethod:
+          type: string
+          enum: [BALANCE, QRIS, EWALLET]
+
+    SettlementResponseBalance:
+      type: object
+      properties:
+        x_sign: { type: string }
+        x_signtime: { type: string }
+        encrypted_authentication_id: { type: string }
+        encrypted_payment_token: { type: string }
+        token_payment: { type: string }
+
+    SettlementResponseOther:
+      type: object
+      properties:
+        x_sign: { type: string }
+        x_signtime: { type: string }
+        verification_token: { type: string }
+    
+    Error400:
+      type: object
+      properties: { error: { type: string } }
+      example: { error: "field_A & field_B are required!" }
+    Error500:
+      type: object
+      properties:
+        error: { type: string }
+        detail: { type: object }
+        stack: { type: string }
+      example: { error: "something failed", detail: {} }
+
+  responses:
+    Error400:
+      description: Bad Request. Field wajib tidak ada atau format salah.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error400'
+    Error500:
+      description: Terjadi kesalahan internal server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500'
+    Error500Decrypt:
+      description: Terjadi kesalahan internal saat dekripsi.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error500'

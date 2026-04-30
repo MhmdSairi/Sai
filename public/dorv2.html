@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KMKZ - Kirim DORv2</title>
+    <meta
+      name="description"
+      content="Web Dor Paket XL buatan Tim KMKZ — tempat ngulik, ngetes, dan ngebut bareng jaringan XL."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      href="https://i.ibb.co.com/M0N8h0C/takina.webp"
+      as="image"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://www.xl.co.id/icons/favicon.png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.0/lib/sakana.min.css"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="sakana-widget" class="sakana-widget"></div>
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fa-solid fa-dragon"> </i> KMKZ MENU</h4>
+      </div>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="index.html"><i class="fas fa-home"></i> Dashboard</a>
+        </li>
+        <li>
+          <a href="login.html"><i class="fas fa-key"></i> Login</a>
+        </li>
+        <li>
+          <a href="package_details.html"
+            ><i class="fas fa-box-open"></i> Detail Paket</a
+          >
+        </li>
+        <li>
+          <a href="package_list.html"
+            ><i class="fas fa-list-alt"></i> Daftar Paket</a
+          >
+        </li>
+
+        <li class="dropdown active">
+          <a href="#" class="dropdown-toggle"
+            ><i class="fas fa-shopping-cart"></i><span>DOR</span
+            ><i class="fas fa-chevron-down dropdown-icon"></i
+          ></a>
+          <ul class="dropdown-menu">
+            <li><a href="dor.html">DOR</a></li>
+            <li><a href="dorv2.html" class="active">DORv2</a></li>
+            <li><a href="dorv3.html">DORv3</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <p>Dibuat oleh Tim KMKZ</p>
+        <a
+          href="https://t.me/ChannelMayumi"
+          target="_blank"
+          aria-label="Telegram KMKZ"
+        >
+          <i class="fab fa-telegram-plane"></i>
+        </a>
+        <button id="clearSessionBtn" aria-label="Hapus Sesi Tersimpan">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </nav>
+
+    <main class="main-content" id="mainContent">
+      <header class="header">
+        <button
+          class="menu-toggle"
+          id="menuToggle"
+          aria-label="Buka Menu Navigasi"
+        >
+          <i id="menuIcon" class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">Kirim DOR (v2)</h1>
+        <button id="darkModeToggle" class="theme-toggle">
+          <i id="darkModeIcon" class="fas fa-moon"></i>
+          <span id="darkModeText">Dark Mode</span>
+        </button>
+      </header>
+
+      <div class="content-container">
+        <div class="current-phone-banner">
+          <span>Nomor Aktif:</span>
+          <strong id="currentPhoneNumber">-</strong>
+        </div>
+
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-rocket"></i> Formulir DORv2
+            </h2>
+          </div>
+          <div class="card-body">
+            <form id="dorv2Form" method="post">
+              <div class="form-group">
+                <label for="dorv2PackageCode" class="form-label"
+                  >Kode Paket</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dorv2PackageCode"
+                  name="packageCode"
+                  placeholder="Masukkan kode paket..."
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="dorv2OverwritePrice" class="form-label"
+                  >Harga Overwrite (Opsional)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="dorv2OverwritePrice"
+                  name="overwritePrice"
+                  placeholder="Contoh: 0"
+                />
+              </div>
+              <div class="form-group">
+                <label for="dorv2DorKey" class="form-label">DOR Key</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dorv2DorKey"
+                  name="dorKey"
+                  placeholder="Masukkan DOR key..."
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" id="dorv2Btn">
+                <span
+                  class="spinner"
+                  id="dorv2Spinner"
+                  style="display: none"
+                ></span>
+                <span id="dorv2BtnText">DAR DER DOR JEDOR v2!</span>
+              </button>
+              <div class="error-text" id="dorv2Error"></div>
+            </form>
+            <div
+              id="dorv2Result"
+              class="response-box"
+              style="display: none"
+              tabindex="0"
+            ></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.0/lib/sakana.min.js"
+      defer
+    ></script>
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
